@@ -2,14 +2,21 @@
 
 ## 파일 순서
 
-1. Foo
+### Foo.java
    1. 함수형 인터페이스를 이용한 람다식 사용 방법
    2. 자바에서 제공하는 함수형 인터페이스 function 사용 방법
-
-2. doSomething : 함수형 인터페이스 문법 정리
+#### 관련 파일(클래스)
+1. doSomething : 함수형 인터페이스 문법 정리
 > Cf. 함수형 인터페이스는 이전부터 사용됐으나(Anonymous inner class) 자바8에 들어서 새롭게 명명
 
-3. Plus10 : 함수형 인터페이스인 Function을 구현해 추상 메서드 apply를 override 하는 방식
+2. Plus10 : 함수형 인터페이스인 Function을 구현해 추상 메서드 apply를 override 하는 방식
+
+### Foo2.java
+    1. local variable 참조(inner class/anonymous class vs Lambda)
+
+### Foo3.java
+    1. method reference
+
 
 
 ## 람다식 특징
@@ -161,5 +168,81 @@ public class Test {
       Function<Integer, Integer> b = i -> i + 10;
       Function<Integer, Integer> c = i -> i * 2;
    }
+}
+```
+
+## Lambda Expression
+### 기본 문법
+- 반환 타입과 메서드명 생략
+- 매개변수 타입은 유추가 가능한 경우 생략 가능(대부분의 경우 생략 가능)
+- 괄호 `{}`안에 식이 한 줄이라면 괄호 생략 가능
+- 괄호 안에 식이 한 줄이고 반환값이 있다면 return 생략 + 괄호 생략(return이 있으면 반드시 괄호 필요)
+
+### local variable 참조
+1. Effective final
+> Java8 이전에는 자신의 scope 외부에 있는 local vairable 중에서는 final 변수만 참조할 수 있었다.
+> Java8부터 생긴 기능으로, 이 변수의 final이 붙지 않아도 참조할 수 있는 경우가 있는데, 이는 해당 변수가 실질적으로 final일 때에 해당한다.
+> final 키워드는 붙지 않았더라도 변수의 값이 변경되지 않으면 사용할 수 있다. 컴파일러는 해당 변수의 값을 변경하려하면 에러를 반환하게 된다.
+> 이렇게 final이 붙지 않은 변수의 값이 변경되지 않는 것을 'Effective final'라고 한다.
+
+2. Shadowing 
+> Inner Class와 Anonymous Class의 local variable은 Shadowing이 일어나지만, Lambda는 일어나지 않는다.
+> 외부에 있는 변수와 같은 이름의 변수 사용 불가(같은 scope임을 의미한다. 즉, 별도의 scope를 가지지 않는다.)
+
+ 
+## Method Reference
+람다가 하는 일이 기존 메서드 또는 생성자를 호출하는 거라면, 메서드 레퍼런스를 사용해 매우 간결하게 표현 가능
+- static 메서드 참조 -> `Type::static-method-name`
+- 특정 객체의 인스턴스 메서드 참조 -> `instance::method-name`
+- 임의 객체의 인스턴스 메서드 참조 -> `Type::instance`
+  - 특정 타입의 불특정 인스턴스의 특정 메서드를 참조
+    ```java
+    public class Test {
+        public static void main(String[] args){
+            String[] names = {"yh", "hw", "ml", "nr"};
+            Arrays.sort(names, (o1, o2) -> o1.compareTo(o2));
+            System.out.println(Arrays.toString(names));
+
+            // 임의의 인스턴스들을 돌면서 compareToIgnoreCase 참조
+            Arrays.sort(names, String::compareToIgnoreCase); // 자기 자신 문자열과 인자로 받은 문자열을 비교해주는 메서드 참조
+            System.out.println(Arrays.toString(names));
+        }
+    }
+    ```
+- 생성자 참조 -> `Type::new`
+
+
+```java
+import java.util.function.UnaryOperator;
+
+public class Test {
+    public static void main(String[] args) {
+        UnaryOperator<String> hello = s -> "hello, " + s;
+        // 해당 기능을 하는 메서드가 클래스 Greeting 내부에 있는 메서드 hello라면 아래와 같이 참조
+        Greeting greeting = new Greeting();
+        UnaryOperator<String> hello2 = greeting::hello;
+        System.out.println(hello2.apply("yh"));
+        // static 메서드를 참조할 경우에는 '타입::메서드명'
+    }
+}
+```
+
+만약 클래스의 인스턴스를 얻는 방법을 메서드 참조로 수행하고자 한다면 아래와 같이 할 수 있다.
+```java
+public class Test {
+    public static void main(String[] args) {
+        Greeting greeting0 = new Greeting();
+        
+        // 매개변수가 없는 생성자 참조 -> Supplier Type
+        Supplier<Greeting> greetingSp = Greeting::new;
+        Greeting greeting1 = greetingSp.get();
+        System.out.println(greeting1.getName()); // null
+        
+        // 매개변수가 하나 있는 생성자 참조 -> Function Type
+        String name = "yh";
+        Function<String, Greeting> greetingSp2 = Greeting::new;
+        Greeting greeting2 = greetingSp2.apply(name);
+        System.out.println(greeting2.getName()); // yh
+    }
 }
 ```
