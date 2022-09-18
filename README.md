@@ -3,8 +3,8 @@
 ## 파일 순서
 
 ### Foo.java
-   1. 함수형 인터페이스를 이용한 람다식 사용 방법
-   2. 자바에서 제공하는 함수형 인터페이스 function 사용 방법
+1. 함수형 인터페이스를 이용한 람다식 사용 방법
+2. 자바에서 제공하는 함수형 인터페이스 function 사용 방법
 #### 관련 파일(클래스)
 1. doSomething : 함수형 인터페이스 문법 정리
 > Cf. 함수형 인터페이스는 이전부터 사용됐으나(Anonymous inner class) 자바8에 들어서 새롭게 명명
@@ -12,11 +12,10 @@
 2. Plus10 : 함수형 인터페이스인 Function을 구현해 추상 메서드 apply를 override 하는 방식
 
 ### Foo2.java
-    1. local variable 참조(inner class/anonymous class vs Lambda)
+1. local variable 참조(inner class/anonymous class vs Lambda)
 
 ### Foo3.java
-    1. method reference
-
+1. method reference
 
 
 ## 람다식 특징
