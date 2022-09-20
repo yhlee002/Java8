@@ -5,6 +5,8 @@
 ### Foo.java
 1. 함수형 인터페이스를 이용한 람다식 사용 방법
 2. 자바에서 제공하는 함수형 인터페이스 function 사용 방법
+3. Java가 제공하는 기본적인 함수형 인터페이스 
+   ex. Function, BiFunction, UnaryOperator, BinaryOperator, Supplier, Consumer, Predicate
 #### 관련 파일(클래스)
 1. doSomething : 함수형 인터페이스 문법 정리
 > Cf. 함수형 인터페이스는 이전부터 사용됐으나(Anonymous inner class) 자바8에 들어서 새롭게 명명
@@ -16,6 +18,9 @@
 
 ### Foo3.java
 1. method reference
+
+### RunSomething, RunSomething2
+1. 
 
 
 ## 람다식 특징
@@ -245,3 +250,18 @@ public class Test {
     }
 }
 ```
+
+# 2. 인터페이스의 Default 메서드와 Static 메서드
+
+[//]: # (## 파일 순서)
+[//]: # (### 1. Foo)
+[//]: # (### 2. DefaultFoo)
+
+## Default Method
+> default 메서드들은 내용을 구현할 수 있다. 이는 이를 구현하지 못한 클래스들의 컴파일 에러를 방지한다.
+
+ 인터페이스를 구현하는 모든 클래스들이 공통적인 기능을 가지게 하기 위해 메서드를 추가할 수 있다.
+그런데 인터페이스 생성 이후 또 다른 추상 메서드들을 추가하게 되면 이를 미처 구현하지 못한 모든 클래스들에 컬파일 에러가 나게 된다.
+
+- 앞에 default 키워드를 붙여야 한다.
+- Ex) Collection 클래스의 removeIf 메서드가 있다.
