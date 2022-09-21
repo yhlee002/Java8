@@ -253,9 +253,10 @@ public class Test {
 
 # 2. 인터페이스의 Default 메서드와 Static 메서드
 
-[//]: # (## 파일 순서)
-[//]: # (### 1. Foo)
-[//]: # (### 2. DefaultFoo)
+## 파일 순서
+### 1. Foo : 인터페이스
+### 2. DefaultFoo : 인터페이스를 구현한 클래스(default 메서드는 다시 정의하지 않는다.)
+### 3. FooTest : 인터페이스를 구현한 클래스의 인스턴스를 생성하여 default 메서드 출력
 
 ## Default Method
 > default 메서드들은 내용을 구현할 수 있다. 이는 이를 구현하지 못한 클래스들의 컴파일 에러를 방지한다.
@@ -264,4 +265,7 @@ public class Test {
 그런데 인터페이스 생성 이후 또 다른 추상 메서드들을 추가하게 되면 이를 미처 구현하지 못한 모든 클래스들에 컬파일 에러가 나게 된다.
 
 - 앞에 default 키워드를 붙여야 한다.
+- 내부에서 재정의 가능한 메서드(추상 메서드)를 호출하는 경우에는 반드시 이를 문서화하여야 한다. (어떤 값을 반환하는지 등에 대해)
+  - JavaDoc(`/** */`)에서 제공하는 @implSpec 등의 annotation을 사용할 수 있다.
+- 모든 클래스가 구현하는 toString()은 default 메서드(혹은 abstract 메서드)로 정의할 수 있다. 그 외의 Object 클래스가 제공하는 메서드들은 불가능하다. (equals 등)
 - Ex) Collection 클래스의 removeIf 메서드가 있다.
