@@ -12,4 +12,7 @@ public interface Foo {
 
     String getName();
 
+    static void printFoo() {
+        System.out.println("Foo");
+    }
 }
