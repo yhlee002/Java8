@@ -254,9 +254,9 @@ public class Test {
 # 2. 인터페이스의 Default 메서드와 Static 메서드
 
 ## 파일 순서
-### 1. Foo : 인터페이스
-### 2. DefaultFoo : 인터페이스를 구현한 클래스(default 메서드는 다시 정의하지 않는다.)
-### 3. FooTest : 인터페이스를 구현한 클래스의 인스턴스를 생성하여 default 메서드 출력
+### Foo : 인터페이스
+### DefaultFoo : 인터페이스를 구현한 클래스(default 메서드는 다시 정의하지 않는다.)
+### FooTest : 인터페이스를 구현한 클래스의 인스턴스를 생성하여 default 메서드 출력
 
 ## Default Method
 > default 메서드들은 내용을 구현할 수 있다. 이는 이를 구현하지 못한 클래스들의 컴파일 에러를 방지한다.
