@@ -20,7 +20,7 @@
 1. method reference
 
 ### RunSomething, RunSomething2
-1. 
+1. 함수형 인터페이스 연습
 
 
 ## 람다식 특징
@@ -262,6 +262,10 @@ public class Test {
 인터페이스를 구현한 클래스의 인스턴스를 생성하여 default 메서드 출력
 ### Bar
 Foo와 같은 반환타입, 같은 매개변수, 같은 이름을 가진 메서드(-> 사실상 같은 메서드)를 가진다. (둘을 같이 구현하는 경우 같은 메서드를 사용하려고 할 경우 직접 구현해야 한다.)
+--
+### App
+
+
 
 ## Default Method
 > default 메서드들은 내용을 구현할 수 있다. 이는 이를 구현하지 못한 클래스들의 컴파일 에러를 방지한다.
@@ -296,3 +300,30 @@ public class App {
 }
 ```
 
+## Java 8에 추가된 default 메서드
+### Iterable
+- forEach()
+- spliterator()
+  - Spliterator 클래스 : 순환에 사용
+    * Iterator가 hasNext() 를 통해 반복을 진행하듯이 Spliterator는 tryAdvance() 인자로 반복해서 수행할 로직을 Consumer 형태로 전달해야 한다.
+    * Cf. Java Stream의 기반에 사용된다.
+    * trySplit() : 절반으로 요소들을 나눠준다. (기존의 Spliterator의 절반의 요소들이 반환된다. 나머지 요소들만이 기존 Spliterator에 남는다.)
+
+### Collection
+- stream(), parallelStream()
+  - stream() - Collection의 모든 구현체들이 가지는 default method이다. spliterator가 인자로 전달되는 것을 볼 수 있다.
+  ```java
+  // Collection 인터페이스 내부
+  @Contract(pure = true)
+  default Stream<E> stream() {
+      return StreamSupport.stream(spliterator(), parellel);
+  }
+    ```
+- spliterator()
+
+### Comparable
+- reversed()
+- thenComparing()
+- static reverseOrder(), naturalOrder()
+- static nullsFirst(), nullsLast()
+- static comparing()
