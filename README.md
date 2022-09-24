@@ -264,6 +264,7 @@ public class Test {
 Foo와 같은 반환타입, 같은 매개변수, 같은 이름을 가진 메서드(-> 사실상 같은 메서드)를 가진다. (둘을 같이 구현하는 경우 같은 메서드를 사용하려고 할 경우 직접 구현해야 한다.)
 --
 ### App
+Java 8에서부터 제공하는 default 메서드들
 
 
 
@@ -327,3 +328,65 @@ public class App {
 - static reverseOrder(), naturalOrder()
 - static nullsFirst(), nullsLast()
 - static comparing()
+
+## Stream API
+- 연속적인 데이터를 ㅊ
+- 연속된 데이터를 처리하는 Operator들의 모음. 그 자체로 데이터가 아니다.
+  Cf. Collection이 데이터를 가지고 있다면 이를 소스로 처리하는 역할을 수행
+- 처리하는 데이터 소스를 변경하지 않는다.
+- Stream으로 처리하는 데이터는 오직 한번만 처리한다.
+- 무제한일 수 있다. (Short Circuit 메서드 - 제한을 걸 수 있다. - 를 이용해 제한할 수 있다.)
+- 중개 오퍼레이션들은 기본적으로 'lazy'하다.
+- 병렬적으로 데이터를 처리할 수 있다. - `parellelStream()`
+  - 내부에서 Spliterator를 사용해 Collection 데이터를 반으로 나누고, 각각을 병행적으로 처리해 마지막에 데이터를 합산하는 작업을 한다.
+
+```java
+import java.util.ArrayList;
+
+public class Test {
+  public static void main(String[] args) {
+    String[] strings = new String[]{'yh', 'hw', 'molang'};
+    List<String> names = new ArrayList<>(List.asList(strings));
+    names.forEach(System.out::println);
+  }
+}
+```
+
+### 종류
+#### Intermediate operation(중개 오퍼레이터)
+계속 이어진다. 즉, Stream 타입을 반환한다. Ex. `map()`, `limit()`, `sorted` 등
+#### Terminal Operation(종료 오퍼레이터)
+Stream 타입이 아닌 타입을 반환한다. Ex. `forEach()`, `allMatch()`, `collect()` 등
+
+#### 예 - map(), limit(), collect(), ...
+```java
+import java.util.ArrayList;
+
+public class Test {
+  public static void main(String[] args) {
+    String[] strings = new String[]{"yh", "hw", "molang"};
+    List<String> names = new ArrayList<>(List.of(strings));
+    
+    // 중개 오퍼레이터만 사용한 경우 실행되지 않는다.
+    names.stream().map(name -> {
+      System.out.println(name);
+      return name.toUpperCase();
+    });
+    
+    // 종료 오퍼레이터가 함께 올 때 중개 오퍼레이터도 실행이 된다.
+    List<String> limitResult = names
+            .stream().map(name -> {
+              System.out.println(name); // yh
+              return name.toUpperCase();
+            })
+            .limit(1) // 1번만 실행한다.
+            .collect(Collectors.toList()); // Stream 외의 타입 반환, 종료 오퍼레이션
+    
+    limitResult.forEach(System.out::println);
+  }
+}
+```
+
+### Stream Pipeline
+0 ~ n개의 중개 오퍼레이션과 하나의 종료 오퍼레이션으로 구성된다.
+스트림이 처리해야하는 데이터는 종료 오퍼레이션을 실행할 때에만 처리한다.

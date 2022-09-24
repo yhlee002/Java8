@@ -1,8 +1,11 @@
 package P02_Default_method_Static_method;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Java 8부터 추가된 default 메서드들
@@ -52,10 +55,29 @@ public class App {
         while(s2Sub1.tryAdvance(System.out::println));
         System.out.println("\n### Sub2");
         while(s2Sub2.tryAdvance(System.out::println));
-
+        System.out.println();
         /**
          * stream() : Collection의 모든 구현체들이 가지는 default method이다.
-         * spliterator를 인자로 받는 것을 볼 수 있다.
+         * spliterator를 인자로 받는 것을 볼 수 있다. (Stream에 대해서는 따로 다룰 것)
          */
+
+        List<String> list = names.stream().map(String::toUpperCase)
+                .filter(s -> s.startsWith("D")).collect(Collectors.toList());
+        list.forEach(System.out::println); // DDUI
+
+        names.removeIf(n -> n.startsWith("m")); // moonchi 제외
+        names.forEach(System.out::println);
+
+        // Comparable
+        System.out.println("\n### Comparable");
+        Comparator<String> compareToIgnoreCase = String::compareToIgnoreCase;
+        names.sort(compareToIgnoreCase);
+        names.forEach(System.out::println);
+
+        names.sort(compareToIgnoreCase.reversed());
+        names.forEach(System.out::println);
+
+        names.sort(compareToIgnoreCase.reversed()); // thenComparing()으로 추가적인 비교 가능
+        names.forEach(System.out::println);
     }
 }
