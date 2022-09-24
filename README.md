@@ -329,8 +329,18 @@ public class App {
 - static nullsFirst(), nullsLast()
 - static comparing()
 
-## Stream API
-- 연속적인 데이터를 ㅊ
+--
+
+# 3. Stream API
+## 파일 순서
+### App
+중개 오퍼레이터와 종료 오퍼레이터 비교
+### App2
+`OnlineClass`를 이용한 Stream 주요 기능 살펴보기
+### OnlineClass
+`App2`에 사용되는 사용자 정의 클래스
+
+## 특징
 - 연속된 데이터를 처리하는 Operator들의 모음. 그 자체로 데이터가 아니다.
   Cf. Collection이 데이터를 가지고 있다면 이를 소스로 처리하는 역할을 수행
 - 처리하는 데이터 소스를 변경하지 않는다.
@@ -339,6 +349,8 @@ public class App {
 - 중개 오퍼레이션들은 기본적으로 'lazy'하다.
 - 병렬적으로 데이터를 처리할 수 있다. - `parellelStream()`
   - 내부에서 Spliterator를 사용해 Collection 데이터를 반으로 나누고, 각각을 병행적으로 처리해 마지막에 데이터를 합산하는 작업을 한다.
+  - 병렬 처리가 무조건 더 빨라 좋기만 한 것은 아니다. - 스레드 생성, 데이터 수집, 스레드 간의 컨텍스트 스위칭 비용 등 비용이 더 들 수도 있다.
+  - Cf. 데이터가 너무 방대하게 큰 경우에는 이 방법이 더 유용하다.
 
 ```java
 import java.util.ArrayList;
