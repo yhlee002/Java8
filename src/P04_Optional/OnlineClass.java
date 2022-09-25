@@ -1,5 +1,7 @@
 package P04_Optional;
 
+import java.util.Optional;
+
 public class OnlineClass {
     private Integer id;
     private String title;
@@ -37,9 +39,10 @@ public class OnlineClass {
         this.closed = closed;
     }
 
-    public Progress getProgress() {
-        return progress;
+    public Optional<Progress> getProgress() {
+        return Optional.empty();
     }
+    // Cf. of() : 인자로 들어오는 것이 무조건 null이 아니라는 것을 전제로 한다.(null일 경우 에러를 발생시킨다.)
 
     public void setProgress(Progress progress) {
         this.progress = progress;
