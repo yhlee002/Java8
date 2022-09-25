@@ -23,15 +23,17 @@ public class App {
         System.out.println(onlineClass.getTitle());
 
         Optional<OnlineClass> optional2 = springClasses.stream()
-                .filter(oc -> oc.getTitle().startsWith("spring"))
+                .filter(oc -> oc.getTitle().startsWith("jpa"))
                 .findFirst();
 
+        /*
         OnlineClass onlineClass2 = optional2.get();
         System.out.println(onlineClass2.getTitle()); // NoSuchElementException 발생
+        */
 
         optional2.ifPresent(o -> System.out.println(o.getTitle()));
         OnlineClass onlineClass3 = optional2.orElse(createNewClass());
-        System.out.println(onlineClass3.getTitle());
+        System.out.println(onlineClass3.getTitle()); // New Class
 
     }
 
