@@ -399,6 +399,65 @@ public class Test {
 }
 ```
 
+### 주요 메서드
+#### map
+Stream 클래스에서 제공하는 메서드
+Stream의 각 요소들을 반복해서 처리
+#### forEach
+Stream 혹은 Iterable 클래스에서 제공하는 메서드
+Stream 혹은 List의 각 요소들을 반복
+#### collect
+Stream 클래스에서 제공하는 메서드
+특정 타입으로 데이터를 모을 때 사용(종료 오퍼레이터에 해당)
+Cf. List<String> 타입으로 모으고자 할 때는 `collect(Collectors.toList())` 과 같이 작성할 수 있다.
+#### limit
+Stream 클래스에서 제공하는 메서드
+몇 개의 데이터만 처리할 것인지 제한을 둘 때 사용
+#### skip
+Stream 클래스에서 제공하는 메서드
+몇 개의 데이터를 스킵할 것인지 제한을 둘 때 사용
+#### anyMatch
+Stream 클래스에서 제공하는 메서드
+조건에 매칭되는 결과가 하나라도 있는지 확인할 때 사용
+boolean 타입을 반환한다. (종료 오퍼레이터에 해당)
+예를 들어 Java 강의 중 강의명에 'Test'가 들어가는 강의가 있는지 확인하고자 할 때는 `javaClasses.stream().anyMatch(oc -> oc.contains("Test"));`과 같이 작성할 수 있다.
+#### Stream.iterate
+Stream 클래스에서 제공하는 `static` 메서드
+데이터로부터 스트림을 만드는 것이 아닌 직접 스트림을 만든다. 때문에 초깃값(seed)가 필요하다.
+예를 들어 10부터 1씩 증가하는 스트림을 생성하고자 한다면 `Stream.iterate(10, i -> i + 1)`와 같이 작성할 수 있다.
+
+
 ### Stream Pipeline
 0 ~ n개의 중개 오퍼레이션과 하나의 종료 오퍼레이션으로 구성된다.
 스트림이 처리해야하는 데이터는 종료 오퍼레이션을 실행할 때에만 처리한다.
+파이프라인 내에서 작업을 수행하는 오퍼레이터들이 취급하는 데이터 타입은 이전 오퍼레이터에 의해 달라질 수 있다.
+
+```java
+import P03_StreamAPI.OnlineClass;
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class Test {
+  public static void main(String[] args) {
+    List<OnlineClass> classes = new ArrayList<>();
+    classes.add(1, "class 1", true);
+    classes.add(2, "class 2", true);
+    
+    List<OnlineClass> classes2 = new ArrayList<>();
+    classes2.add(3, "class 3", true);
+    classes2.add(4, "class 4", true);
+    
+    List<<List<OnlineClass>> list = new ArrayList<>();
+    list.add(classes);
+    list.add(classes2);
+
+    classes.stream()
+            .map(oc -> oc.getTitle()) // 취급 타입이 OlineClass -> String
+            .forEach(System.out::println);
+
+    list.stream()
+            .flatMap(Collection::stream) // 취급 타입이 List<OnlineClass> -> OnlineClass
+            .forEach(System.out::println);
+  }
+}
+```
