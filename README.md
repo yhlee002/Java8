@@ -461,3 +461,77 @@ public class Test {
   }
 }
 ```
+
+# Optional
+> 오직 하나의 값을 가지고 있을 수도 없을 수도 있는 컨테이너
+
+Java 8 이전에는 제대로 된 값을 리턴할 수 없을 때 할 수 있는 방법은 두 가지 밖에 없었다. `null`을 반환하거나 Error를 반환하는 것이 그것이다.
+- 에러를 발생시키는 경우에는 Java에서 Stack Track를 출력하기 위해 리소스를 쓰게 되므로 좋은 방법이 아니다.
+  - Cf. 로직을 처리할 때 에러를 발생시키는 것은 좋은 습관이 아니다.
+- `null`을 반환하는 경우에는 이를 참조하는 코드에서 값이 `null`일 수 있는 점에 유의해 주의해야 한다. 
+- Java 8부터는 `Optional`을 사용해 참조하는 코드에게 명시적으로 빈 값일 수 있음을 알려주고, 빈 값의 경우에 대한 처리를 강제한다.
+```java
+import java.util.Optional;
+
+public class OnlineClass {
+  public Optional<Progress> getProgress() {
+    return Optional.ofNullable(progress);
+  }
+}
+```
+
+## 주의할 점
+- 리턴 값으로만 쓰기를 권장한다. (메서드 매개변수 타입, `Map`의 키 타입, 인스턴스 필드 타입으로 사용하지 않기를 권고)
+  - Cf. Map의 특징 중 가장 중요한 점은 key는 `null`이 될 수 없다는 점이다.
+- `Optional<T>` 타입을 반환하는 경우에서 `null`을 반환하지 말아야 한다. 즉, 해당 값이 `null`일 지라도 `null`이 아닌 `Optional.empty()`를 반환해야 한다.
+  - 이를 참조하는 곳에서 `NullPointerException`이 발생하기 때문이다.
+- Contianer 성격의 타입들을 Optional로 다시금 감싸지 않아야 한다. - `Collection`, `Map`, `Stream`, `Array`, `Optional`을 `Optional`로 감싸지 말아야 한다.
+  - 이 들은 비어있음을 표현할 수 있는 기능이 있다. 이 기능을 사용해야 한다.
+
+## 주요 메서드
+### Optional.of(), Optional.ofNullable(), Optional.empty()
+`Optional`을 만든다.
+### isPresent(), isEmpty()
+`Optional`에 값이 있는지 없는지 확인하는 메서드로, `isEmpty()`는 Java 11부터 제공한다.
+### get()
+`Optional`에 있는 값을 가져온다.
+비어있는 경우에는 `NoSuchElementException`이 발생한다.
+### ifPresent(Consumer)
+`Optional`에 값이 있는 경우에는 그 값을 인자로 받아 수행할 내용(`Consumer` 형태)가 들어간다.
+```java
+import P04_Optional.OnlineClass;
+
+public class Test {
+  public static void main(String[] args) {
+    List<OnlineClass> springClasses = new ArrayList<>();
+    springClasses.add(new OnlineClass(1, "spring boot", true));
+    springClasses.add(new OnlineClass(5, "rest api development", false));
+
+    Optional<OnlineClass> optional = springClasses.stream()
+            .filter(oc -> oc.getTitle().startsWith("spring"))
+            .findFirst();
+    
+    // 값이 존재할 때만 처리
+    optional.ifPresent(o ->System.out.println(o.getTitle()));
+    // 값이 존재하면 가져오고, 없으면 다른 방식으로 처리
+    OnlineClass onlineClass = optional.orElse(createNewClass());
+    System.out.println(onlineClass.getTitle());
+  }
+
+  private static OnlineClass createNewClass() {
+      return new OnlineClass(10, "New Class", false);
+  }
+}
+
+```
+### orElse(T)
+`Optional`에 값이 있으면 가져오고 없는 경우에는 다른 타입(`T`)의 값을 반환한다.
+### orElseGet(Supplier)
+`Optional`에 값이 있으면 가져오고 없는 경우에 수행할 내용(`Supplier` 형태)가 들어간다.
+### orElseThrow()
+`Optional`에 값이 있으면 가져오고 없는 경우에는 에러를 발생시킨다.
+### filter(Predicate)
+`Optional`에 있는 값을 걸러낸다.
+### map(Function), flatMap(Function)
+`Optional`에 있는 값을 변환한다.
+Cf. flatMap : `Optional` 안에 있는 인스턴스가 `Optional`인 경우에 사용하면 편리하다.
