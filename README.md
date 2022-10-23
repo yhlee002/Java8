@@ -533,7 +533,7 @@ public class Test {
 }
 ```
 
-# Optional
+# 4. Optional
 
 > 오직 하나의 값을 가지고 있을 수도 없을 수도 있는 컨테이너
 
@@ -658,7 +658,7 @@ Cf. `Stream`에서 제공하는 `flatMap()`과 `Optional`에서 제공하는 `fl
 `Stream`에서 제공하는 `map()`은 1:1 맵핑이다. 이와 달리 `flatMap()`은 List에 담긴 List의 요소들을 꺼낼 때 주로 쓰인다. 즉, input은 하나지만 output이 다수일 때
 사용된다.
 
-# Date, Time
+# 5. Date, Time
 
 ### Cf. 기존에 Java에서 시간과 관련해 제공하던 API들의 특징
 
@@ -760,10 +760,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public class App {
-  public static void main(String[] args) {
-    LocalDateTime now = LocalDateTime.now();
-    LocalDateTime after10Minutes = now.plus(10, ChronoUnit.MINUTES);
-  }
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime after10Minutes = now.plus(10, ChronoUnit.MINUTES);
+    }
 }
 ```
 
@@ -833,7 +833,7 @@ Cf. 이 때, 기존의 `ZonedDateTime` 인스턴스를 `Instant` 타입으로 �
 public class App {
     public static void main(String[] args) {
         ZonedDateTime nowInSeoul = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-        
+
         System.out.println("now(Asia/Seoul) " + nowInSeoul);
         // now(with timezone) 2022-10-23T00:41:24.471570400+09:00[Asia/Seoul]
         System.out.println("now(Paris) " + ZonedDateTime.ofInstant(nowInSeoul.toInstant(), ZoneId.of("Europe/Paris")));
@@ -843,7 +843,9 @@ public class App {
 ``` 
 
 ## Period
+
 인류용 시간(`LocalDate`)상의 기간을 나타낼 수 있다.
+
 - `Period.between(LocalDate l1, LocalDate l2)`, `until(LocalDate compareDate)`
 - `Period`를 그대로 출력할 시 `P[남은 달]M[남은 날]D` 형태로 출력된다.
 - 만약 `l1`(= `compareDate`)가 기준 `LocalDate` 보다 빠를 경우 `[남은 달]`과 [`남은 날]`은 0보다 작거나 같은 수가 출력된다.
@@ -851,90 +853,97 @@ public class App {
 
 ```java
 public class App {
-  public static void main(String[] args) {
-    LocalDate today = LocalDate.now();
-    LocalDate nextYearBirthDay = LocalDate.of(2023, Month.FEBRUARY, 14);
+    public static void main(String[] args) {
+        LocalDate today = LocalDate.now();
+        LocalDate nextYearBirthDay = LocalDate.of(2023, Month.FEBRUARY, 14);
 
-    Period period = Period.between(today, nextYearBirthDay);
-    System.out.println(period); // P3M22D
-    System.out.println(period.getDays()); // 22
+        Period period = Period.between(today, nextYearBirthDay);
+        System.out.println(period); // P3M22D
+        System.out.println(period.getDays()); // 22
 
-    Period until = today.until(nextYearBirthDay);
-    System.out.println(until.get(ChronoUnit.DAYS)); // 22
-    System.out.println(until.getDays()); // 22
-  }
+        Period until = today.until(nextYearBirthDay);
+        System.out.println(until.get(ChronoUnit.DAYS)); // 22
+        System.out.println(until.getDays()); // 22
+    }
 }
 ```
 
 ## Duration
+
 기계용 시간(`Instant`)상의 기간을 나타낼 수 있다.
+
 - `Duration.between(Instant i1, Instant i2)`
 - `Duration`를 그대로 출력할 시 `P[남은 시간]T[남은 초]S` 형태로 출력된다.
 
 ```java
 public class App {
-  public static void main(String[] args) {
-    Instant inst1 = Instant.now();
-    Instant inst2 = inst1.plus(10, ChronoUnit.SECONDS);
-    Duration duration = Duration.between(inst1, inst2);
-  }
+    public static void main(String[] args) {
+        Instant inst1 = Instant.now();
+        Instant inst2 = inst1.plus(10, ChronoUnit.SECONDS);
+        Duration duration = Duration.between(inst1, inst2);
+    }
 }
 ```
 
 ## Formatting
+
 - `DateTimeFormatter.ofPattern("String pattern")`을 통해 `LocalDateTime`, `LocalDate`에 대한 커스텀 포매팅이 가능하다.
-- `parse(LocalDateTime l, DateTimeFormatter formatter)`를 통해 포매팅된 문자열 형태의 날짜 데이터를 `LocalDateTime` 혹은 `LocalDate` 형태로 파싱 가능하다.
+- `parse(LocalDateTime l, DateTimeFormatter formatter)`를 통해 포매팅된 문자열 형태의 날짜 데이터를 `LocalDateTime` 혹은 `LocalDate` 형태로 파싱
+  가능하다.
 - 커스텀 패턴에 시분초 정보가 있는데 이 정보가 없는 `LocalDate`를 포매팅하려하면 `Unsupported field: ClockHourOfAmPm` 에러가 발생한다.
 - 포매팅과 파싱 사이에는 포매터(`DateTimeFormatter`)의 형태가 일치해야 한다.
+
 ```java
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class App {
-  public static void main(String[] args) {
-    LocalDateTime now = LocalDateTime.now();
-    
-    // formatting
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-    System.out.println(now.format(formatter));
-    
-    // parsing
-    LocalDate result = LocalDate.parse("2023 - 02 - 14", formatter);
-    System.out.println("parsed " + result);
-  }
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // formatting
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        System.out.println(now.format(formatter));
+
+        // parsing
+        LocalDate result = LocalDate.parse("2023 - 02 - 14", formatter);
+        System.out.println("parsed " + result);
+    }
 }
 ```
 
 ## Legacy API와의 연계
+
 - `Date`와 `Instant`간의 변환
 
 ```java
 import java.util.Date;
 
 public class App {
-  public static void main(String[] args) {
-    Date date = new Date();
-    Instant instant = date.toInstant();
-    Date dateResult = Date.from(instant);
-  }
+    public static void main(String[] args) {
+        Date date = new Date();
+        Instant instant = date.toInstant();
+        Date dateResult = Date.from(instant);
+    }
 }
 ```
 
 - `GregorianCalendar`와 `Instant`간의 변환 (`ZonedDateTime`, `LocalDateTime` 등으로 추가 변환 가능)
-  - Cf. `GregorianCalendar`에는 TimeZone 데이터가 존재하므로 `ZonedDateTime`으로 부터 변환될 수 있다.
+    - Cf. `GregorianCalendar`에는 TimeZone 데이터가 존재하므로 `ZonedDateTime`으로 부터 변환될 수 있다.
+
 ```java
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 
 public class App {
-  public static void main(String[] args) {
-    GregorianCalendar calendar = new GregorianCalendar();
-    Instant instant = calendar.toInstant();
-    ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
-    LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
+    public static void main(String[] args) {
+        GregorianCalendar calendar = new GregorianCalendar();
+        Instant instant = calendar.toInstant();
+        ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+        LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
 
-    GregorianCalendar calendar2 = GregorianCalendar.from(zonedDateTime);
-  }
+        GregorianCalendar calendar2 = GregorianCalendar.from(zonedDateTime);
+    }
 }
 ```
 
@@ -945,9 +954,79 @@ import java.time.ZoneId;
 import java.util.TimeZone;
 
 public class App {
-  public static void main(String[] args) {
-    ZoneId zoneId = TimeZone.getTimeZone("PST").toZoneId();
-    TimeZone timeZone = TimeZone.getTimeZone(zoneId);
+    public static void main(String[] args) {
+        ZoneId zoneId = TimeZone.getTimeZone("PST").toZoneId();
+        TimeZone timeZone = TimeZone.getTimeZone(zoneId);
+    }
+}
+```
+
+# 6. CompletableFuture
+
+> Cf. Concurrent Software란?
+> - 동시에 여러 작업을 할 수 있는 소프트웨어
+> - Ex) 웹 브라우저로 유튜브를 보면서 키보드로 문서에 타이핑을 할 수 있다.
+> - Ex) 녹화를 하면서 코딩을 하고 워드에 적어둔 문서를 보거나 수정할 수 있다.
+
+## Java에서 제공하는 Concurrent Programming
+
+- Multi-Processing(`ProcessBuilder`)
+- Multi-Thread
+
+## Java Multi-Thread Programming
+
+- `Thread` 상속 또는 `Runnable` 구현(`Runnable`이 함수형 인터페이스로 변경되었기 때문에 Lambda로 작성 가능)
+
+```java
+public class App {
+    public static void main(String[] args) {
+        // 
+        Thread1 thread1 = new Thread1();
+        thread1.start();
+
+        Thread thread2 = new Thread(() -> {
+            System.out.println("[Thread2] " + Thread.currentThread().getName());
+        });
+    
+        thread2.start();
+
+        System.out.println("[Main] " + Thread.currentThread().getName());
+    }
+
+    static class Thread1 extends Thread {
+        @Override
+        public void run() {
+            System.out.println("[Thread1] " + Thread.currentThread().getName());
+        }
+    }
+
+}
+```
+
+### interrupt
+Cf. `void` 메서드에서 `return`을 할 경우 작업을 끝냄
+```java
+public class App {
+  public static void main(String[] args) throws InterruptedException {
+
+    Thread thread = new Thread(() -> {
+      while (true) {
+        System.out.println("[Thread2] " + Thread.currentThread().getName());
+
+        try {
+          Thread.sleep(1000L); // 다른 스레드에게 리소스 사용권이 우선됨
+        } catch (InterruptedException e) {
+          System.out.println("inturrupted !");
+          return; // 해당 스레드 작업 종료
+        }
+      }
+    });
+
+    thread.start();
+
+    System.out.println("[Main] " + Thread.currentThread().getName());
+    Thread.sleep(3000L);
+    thread.interrupt(); // InturruptedException을 발생시킨다.
   }
 }
 ```
