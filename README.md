@@ -1110,4 +1110,19 @@ public class App {
 Multi-Process Programming에 유용한 프레임워크(내용 생략)
 
 #### Callable
-스레드에서 작업을 실행하고 결과를 가져오고 싶다면 `void`만 가능한 `Runnable` 대신 `Callable`을 사용할 수 있다.
+스레드에서 작업을 실행하고 결과를 가져오고 싶다면 `void`만 가능한 `Runnable` 대신 `T` 타입을 반환하는 `Callable`을 사용할 수 있다.
+
+반환 타입의 유무만 다를 뿐 Runnable과 거의 동일하게 사용된다.
+   -> `Future<T> ExecutorService.submit(Callable<T> c)`와 같이 사용된다.
+
+#### Future
+1. `isDone()`: 작업 상태(가 완료되었는지)를 받을 수 있다
+2. `get()`: 작업이 끝나길 기다렸다가 이후 코드가 실행된다.
+3. `cancel(Boolean cancel)`: 진행중인 작업을 취소할 사용
+   - 인터럽트 시킬 것인지 여부(현재 작업이 끝나지 않아도 종료할 것인지 여부)를 인자로 전달한다.
+   - Cf. cancel()을 하면 즉시 isDone()은 true가 되고, 실행 중인 작업 중단유무와 상관없이 get()으로 결과를 가져올 수 없다.
+
+#### 여러 개의 Callable 작업을 전달할 때
+Cf. `Runnable`이 아닌 `Callable`만이 가능하다.
+- `List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)`: 리스트 형태로 `Callable` 목록을 전달해 Future 리스트를 결과로 받을 수 있다.
+- `T invokeAny(Collection<? extends Callable<T>> tasks)`: 리스트 형태로 `Callable` 목록을 전달해 가장 먼저 끝나는 `Future`의 결과만을 받을 수 있다.
