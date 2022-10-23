@@ -1047,35 +1047,67 @@ High-Level Concurrency Programming
 
 - Thread를 만들고 관리하는 작업을 애플리케이션에서 분리하여 `Executors`에게 위임할 수 있다. (Low-Level에서 스레드를 관리하는 코드를 짜지 않아도 된다.)
 - Thread 생성, Thread 관리, 작업 처리 및 실행(Thread로 실행할 작업을 제공할 수 있는 API 제공)이 가능하다.
-- 만약 `Executor`에 다수의 작업을 전달했을 때, `Executor` 내부의 스레드 풀에 그만큼의 개수에 해당하는 스레드들이 없을 경우에는 'Blocking Queue'에 작업들을 넣고 이를 순서대로 처리하게 된다.
+- 만약 `Executor`에 다수의 작업을 전달했을 때, `Executor` 내부의 스레드 풀에 그만큼의 개수에 해당하는 스레드들이 없을 경우에는 'Blocking Queue'에 작업들을 넣고 이를 순서대로
+  처리하게 된다.
 
 ### 주요 인터페이스
 
 #### Executor
+
 `execute(Runnable r)`을 사용해 `Runnable` 인스턴스만 제공하면 그 외의 일련의 작업은 `Executor`가 수행해준다.
 
 #### ExecutorService
+
 `Executor`를 상속받은 인터페이스. `Callable`도 실행할 수 있으며, `Executor`를 종료시키거나 여러 `Callable`을 동시에 실행할 수 있다.
-- `Executors`의 static 메서드들로 Thread를 생성할 수 있다. 
-  - Ex) `newSingleThreadExecutor()` : 하나의 스레드를 사용하는 `Executor`를 생성한다.
-  - Ex) `newFixedThreadPool(int n)` : `n`개의 스레드가 존재하는 스레드 풀을 사용하는 `Executor`를 생성한다.
+
+- `Executors`의 static 메서드들로 Thread를 생성할 수 있다.
+    - Ex) `newSingleThreadExecutor()` : 하나의 스레드를 사용하는 `Executor`를 생성한다.
+    - Ex) `newFixedThreadPool(int n)` : `n`개의 스레드가 존재하는 스레드 풀을 사용하는 `Executor`를 생성한다.
 - `execute(Runnable r)` 혹은 `submit(Runnable r)`을 통해 실행할 작업을 제공할 수 있다.
 - 작업을 실행하고 나면 다음 작업이 들어올 때까지 대기하기 때문에 프로세스가 죽지 않는다. 때문에 필요시 명시적으로 종료시켜 주어야 한다.
 - 종료시 `shutdown()`을 사용할 수 있다. 이 때 `shutdown()`은 'gracefule shutdown'에 해당한다.
   Cf. graceful shutdown : 현재 진행중인 작업은 끝까지 마치고 종료한다.
-  - 현재 실행중인 작업에 상관없이 당장 종료시키기 위해서는 `shutdownNow()`를 사용할 수 있다.
+    - 현재 실행중인 작업에 상관없이 당장 종료시키기 위해서는 `shutdownNow()`를 사용할 수 있다.
 
 ```java
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class App {
-  public static void main(String[] args) {
-    ExecutorService service = Executors.newSingleThreadExecutor();
-    service.submit(() -> {
-      System.out.println("[Thread] " + Thread.currentThread().getName());
-    });
-    executorService.shutdown();
-  }
+    public static void main(String[] args) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.submit(() -> {
+            System.out.println("[Thread] " + Thread.currentThread().getName());
+        });
+        executorService.shutdown();
+    }
 }
 ```
+
+#### ScheduledExecutorService
+
+`ExecutorService`를 상속받은 인터페이스. `특정 시간 이후` 또는 `주기적으로` 작업을 실행할 수 있다.
+
+- `schedule(Runnable r, long delay, TimeUnit unit)`: `delay`(단위는 `unit`) 후에 실행될 작업을 전달할 수 있다.
+- `scheduleAtFixedRate(Ruinnable r, long delay, long period, TimeUnit unit)`: `delay` 후에 실행되어 `period` 간격으로 발생한다.
+  - Cf. `service.shutdown()`가 뒤따라 오게 되면, inturrupt가 발생하면 스레드가 멈추므로 사용하지 않는다.
+
+```java
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+public class App {
+    public static void main(String[] args) {
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.schedule(() -> System.out.println("Hello"), 1, TimeUnit.SECONDS);
+        service.shutdown();
+    }
+}
+```
+
+#### Fork/Join Framework
+Multi-Process Programming에 유용한 프레임워크(내용 생략)
+
+#### Callable
+스레드에서 작업을 실행하고 결과를 가져오고 싶다면 `void`만 가능한 `Runnable` 대신 `Callable`을 사용할 수 있다.
