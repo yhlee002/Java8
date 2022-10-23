@@ -753,6 +753,19 @@ public class App {
 - 자동으로 시스템의 TimeZone이 적용된 시간이 반환되며, 타임존 정보를 가지지 않는다. (배포한 서버의 TimeZone을 따름에 유의해야 한다.)
 - 특정 날짜의 `LocalDateTime`을 구하고자 할 때에는 `LocalDateTime.of(int year, Month month, int dayOfMonth, int hour, int minute)`를
   사용해야 한다. (인자로 초, 밀리초까지도 전달할 수 있다.)
+- Cf. `plus(long amount, TemporalUnit unit)`에서 `TemporalUnit`으로는 `ChronoUnit`을 사용해야 한다.
+
+```java
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
+public class App {
+  public static void main(String[] args) {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime after10Minutes = now.plus(10, ChronoUnit.MINUTES);
+  }
+}
+```
 
 ## Cf. Instant에서 ZonedDateTime으로의 변환
 
@@ -888,6 +901,53 @@ public class App {
     // parsing
     LocalDate result = LocalDate.parse("2023 - 02 - 14", formatter);
     System.out.println("parsed " + result);
+  }
+}
+```
+
+## Legacy API와의 연계
+- `Date`와 `Instant`간의 변환
+
+```java
+import java.util.Date;
+
+public class App {
+  public static void main(String[] args) {
+    Date date = new Date();
+    Instant instant = date.toInstant();
+    Date dateResult = Date.from(instant);
+  }
+}
+```
+
+- `GregorianCalendar`와 `Instant`간의 변환 (`ZonedDateTime`, `LocalDateTime` 등으로 추가 변환 가능)
+  - Cf. `GregorianCalendar`에는 TimeZone 데이터가 존재하므로 `ZonedDateTime`으로 부터 변환될 수 있다.
+```java
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
+
+public class App {
+  public static void main(String[] args) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    Instant instant = calendar.toInstant();
+    ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+    LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
+
+    GregorianCalendar calendar2 = GregorianCalendar.from(zonedDateTime);
+  }
+}
+```
+
+- `ZoneId`와 `TimeZone`간의 변환
+
+```java
+import java.time.ZoneId;
+import java.util.TimeZone;
+
+public class App {
+  public static void main(String[] args) {
+    ZoneId zoneId = TimeZone.getTimeZone("PST").toZoneId();
+    TimeZone timeZone = TimeZone.getTimeZone(zoneId);
   }
 }
 ```

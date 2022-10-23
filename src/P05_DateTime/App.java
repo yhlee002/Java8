@@ -1,14 +1,11 @@
 package P05_DateTime;
 
-import javax.swing.text.DateFormatter;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class App {
 
@@ -144,6 +141,31 @@ public class App {
 
         LocalDateTime result2 = LocalDateTime.parse(formatted2, formatter2);
         System.out.println("parsed(DateTime) " + result2);
+
+        /**
+         * Date -> Instant
+         */
+
+        Date date1 = new Date();
+        Instant instant2 = date1.toInstant();
+        Date date2 = Date.from(instant2);
+
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        Instant instant3 = gregorianCalendar.toInstant();
+        ZonedDateTime zonedDateTime1 = instant3.atZone(ZoneId.systemDefault());
+        LocalDateTime dateTime = zonedDateTime1.toLocalDateTime();
+
+        GregorianCalendar gregorianCalendar1 = GregorianCalendar.from(zonedDateTime1);
+
+        ZoneId zoneId1 = TimeZone.getTimeZone("PST").toZoneId();
+        TimeZone timeZone = TimeZone.getTimeZone(zoneId1);
+
+        System.out.println(gregorianCalendar1);
+        System.out.println(zoneId1);
+        System.out.println(timeZone.getID());
+
+
+
 
 
     }
