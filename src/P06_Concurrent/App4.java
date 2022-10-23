@@ -20,5 +20,8 @@ public class App4 {
 
     String futureAny = service.invokeAny(List.of(collable1, collable2, collable3));
     System.out.println(futureAny);
+
+    service.shutdown();
+    System.out.println("service shutdown : " + service.isShutdown());
   }
 }

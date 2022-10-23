@@ -12,7 +12,7 @@ public class App2 {
                 try {
                     Thread.sleep(3000L);
                 } catch (InterruptedException e) {
-                    throw new IllegalStateException(e);
+                    throw new IllegalStateException(e); //  throw error 또는 return할 시 스레드 작업 종료
                 }
             }
         });
