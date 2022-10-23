@@ -829,3 +829,65 @@ public class App {
 }
 ``` 
 
+## Period
+인류용 시간(`LocalDate`)상의 기간을 나타낼 수 있다.
+- `Period.between(LocalDate l1, LocalDate l2)`, `until(LocalDate compareDate)`
+- `Period`를 그대로 출력할 시 `P[남은 달]M[남은 날]D` 형태로 출력된다.
+- 만약 `l1`(= `compareDate`)가 기준 `LocalDate` 보다 빠를 경우 `[남은 달]`과 [`남은 날]`은 0보다 작거나 같은 수가 출력된다.
+- `getYears()`, `getMonths()`, `getDays()` 뿐만 아니라 `get(TemporalUnit unit)`도 사용할 수도 있다.
+
+```java
+public class App {
+  public static void main(String[] args) {
+    LocalDate today = LocalDate.now();
+    LocalDate nextYearBirthDay = LocalDate.of(2023, Month.FEBRUARY, 14);
+
+    Period period = Period.between(today, nextYearBirthDay);
+    System.out.println(period); // P3M22D
+    System.out.println(period.getDays()); // 22
+
+    Period until = today.until(nextYearBirthDay);
+    System.out.println(until.get(ChronoUnit.DAYS)); // 22
+    System.out.println(until.getDays()); // 22
+  }
+}
+```
+
+## Duration
+기계용 시간(`Instant`)상의 기간을 나타낼 수 있다.
+- `Duration.between(Instant i1, Instant i2)`
+- `Duration`를 그대로 출력할 시 `P[남은 시간]T[남은 초]S` 형태로 출력된다.
+
+```java
+public class App {
+  public static void main(String[] args) {
+    Instant inst1 = Instant.now();
+    Instant inst2 = inst1.plus(10, ChronoUnit.SECONDS);
+    Duration duration = Duration.between(inst1, inst2);
+  }
+}
+```
+
+## Formatting
+- `DateTimeFormatter.ofPattern("String pattern")`을 통해 `LocalDateTime`, `LocalDate`에 대한 커스텀 포매팅이 가능하다.
+- `parse(LocalDateTime l, DateTimeFormatter formatter)`를 통해 포매팅된 문자열 형태의 날짜 데이터를 `LocalDateTime` 혹은 `LocalDate` 형태로 파싱 가능하다.
+- 커스텀 패턴에 시분초 정보가 있는데 이 정보가 없는 `LocalDate`를 포매팅하려하면 `Unsupported field: ClockHourOfAmPm` 에러가 발생한다.
+- 포매팅과 파싱 사이에는 포매터(`DateTimeFormatter`)의 형태가 일치해야 한다.
+```java
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class App {
+  public static void main(String[] args) {
+    LocalDateTime now = LocalDateTime.now();
+    
+    // formatting
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    System.out.println(now.format(formatter));
+    
+    // parsing
+    LocalDate result = LocalDate.parse("2023 - 02 - 14", formatter);
+    System.out.println("parsed " + result);
+  }
+}
+```

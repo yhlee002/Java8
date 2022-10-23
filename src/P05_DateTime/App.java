@@ -1,7 +1,10 @@
 package P05_DateTime;
 
+import javax.swing.text.DateFormatter;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.Date;
@@ -94,6 +97,54 @@ public class App {
         System.out.println("instant " + instant1);
         System.out.println("zoned date time " + zonedDateTime);
         System.out.println("local date time " + localDateTime);
+
+        /**
+         * Period
+         */
+
+        LocalDate today = LocalDate.now();
+//        LocalDate nextYearBirthDay = LocalDate.of(2023, Month.FEBRUARY, 14);
+        LocalDate nextYearBirthDay = LocalDate.of(2022, Month.FEBRUARY, 14);
+
+        Period period = Period.between(today, nextYearBirthDay);
+        System.out.println(period); // P3M22D
+        System.out.println(period.getDays());
+
+        Period until = today.until(nextYearBirthDay);
+        System.out.println(until.get(ChronoUnit.DAYS));
+        System.out.println(until.getDays());
+
+        /**
+         * Duration
+         */
+        Instant inst1 = Instant.now();
+        Instant inst2 = inst1.plus(10, ChronoUnit.SECONDS);
+        Duration duration = Duration.between(inst1, inst2);
+        System.out.println(duration);
+
+        /**
+         * Formatting
+         */
+
+        // formatting(DateTime -> Date)
+        LocalDateTime now2 = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy - MM - dd");
+        String formatted = now2.format(formatter);
+        System.out.println("formatted(DateTime) " + formatted);
+
+        // parsing
+        LocalDate result = LocalDate.parse(formatted, formatter);
+        System.out.println("parsed(Date) " + result);
+
+
+        // formatting & parsing (DateTime -> DateTime)
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy - MM - dd HH:mm:ss");
+        String formatted2 = now2.format(formatter2);
+        System.out.println("formatted(DateTime) " + formatted2);
+
+        LocalDateTime result2 = LocalDateTime.parse(formatted2, formatter2);
+        System.out.println("parsed(DateTime) " + result2);
+
 
     }
 }
