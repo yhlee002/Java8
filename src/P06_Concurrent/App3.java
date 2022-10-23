@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 // Executors
 public class App3 {
     public static void main(String[] args) {
-        ExecutorService executorService = Executors.newFixedThreadPool(2); // 스레드를 하나만 사용하는 executor
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         executorService.submit(getRunnable("one"));
         executorService.submit(getRunnable("two"));
         executorService.submit(getRunnable("three"));
