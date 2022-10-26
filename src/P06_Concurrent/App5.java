@@ -11,8 +11,9 @@ public class App5 {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         /**
          * CompletableFuture
-         * CompletableFuture<Void>: runAsync(Callable c) 사용
-         *
+         * - void runAsync(Callable c) 사용
+         * - T applySync(Function f)
+         * - void applySync(Consumer c)
          */
         // create with constructor
         CompletableFuture<String> future = new CompletableFuture();
@@ -54,8 +55,14 @@ public class App5 {
                 });
         future7.get();
 
+        /**
+         * ForkJoinPool이 아닌 별도의 스레드 전달
+         * 콜백의 경우 thenRun, thenApply, thenAccept 에 'Async'를 붙인 메서드를 통해 별도의 스레드 전달 가능
+         */
+
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
+        // supplySync + thenRunAsync
         CompletableFuture<Void> future8_1 = CompletableFuture.supplyAsync(() -> {
             System.out.println("[future8_1] " + Thread.currentThread().getName());
             return "future8_1";
@@ -64,6 +71,7 @@ public class App5 {
         }, executor);
         future8_1.get();
 
+        // supplySync + thenAcceptAsync
         CompletableFuture<Void> future8_2 = CompletableFuture.supplyAsync(() -> {
             System.out.println("[future8_2] " + Thread.currentThread().getName());
             return "future8_2";
@@ -72,6 +80,7 @@ public class App5 {
         }, executor);
         future8_2.get();
 
+        // supplySync + thenApplyAsync
         CompletableFuture<Boolean> future8_3 = CompletableFuture.supplyAsync(() -> {
             System.out.println("[future8_3] " + Thread.currentThread().getName());
             return "future8_3";

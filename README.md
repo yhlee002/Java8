@@ -1146,6 +1146,7 @@ Cf. `Runnable`이 아닌 `Callable`만이 가능하다.
 - `thenApply(Function f)`: 결과로 받은 값의 타입을 변경할 수 있다.
 - `thenAccept(Consumer c)`: 파라미터를 가지나 리턴값이 없다.
 - `thenRun(Runnable r)`: 파라미터를 가지지 않고 리턴값이 없다.
+Cf. `void runAsync(Runnable r)` + `U thenAccept(Function <T, U> f)` -> null 전달
 
 
 
