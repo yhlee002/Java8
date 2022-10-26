@@ -1106,18 +1106,18 @@ public class App {
 }
 ```
 
-#### Fork/Join Framework
+## Fork/Join Framework
 Multi-Process Programming에 유용한 프레임워크(내용 생략)
 
-#### Callable
+## Callable
 스레드에서 작업을 실행하고 결과를 가져오고 싶다면 `void`만 가능한 `Runnable` 대신 `T` 타입을 반환하는 `Callable`을 사용할 수 있다.
 
 반환 타입의 유무만 다를 뿐 Runnable과 거의 동일하게 사용된다.
    -> `Future<T> ExecutorService.submit(Callable<T> c)`와 같이 사용된다.
 
-#### Future
+## Future
 1. `isDone()`: 작업 상태(가 완료되었는지)를 받을 수 있다
-2. `get()`: 작업이 끝나길 기다렸다가 이후 코드가 실행된다.
+2. `get()`: 작업을 수행하고 그 결과를 반환한다. 작업이 끝날 때까지 기다렸다가 끝나야 이후 코드가 실행된다. (Blocking Call)
 3. `cancel(Boolean cancel)`: 진행중인 작업을 취소할 사용
    - 인터럽트 시킬 것인지 여부(현재 작업이 끝나지 않아도 종료할 것인지 여부)를 인자로 전달한다.
    - Cf. cancel()을 하면 즉시 isDone()은 true가 되고, 실행 중인 작업 중단유무와 상관없이 get()으로 결과를 가져올 수 없다.
@@ -1126,3 +1126,26 @@ Multi-Process Programming에 유용한 프레임워크(내용 생략)
 Cf. `Runnable`이 아닌 `Callable`만이 가능하다.
 - `List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)`: 리스트 형태로 `Callable` 목록을 전달해 Future 리스트를 결과로 받을 수 있다.
 - `T invokeAny(Collection<? extends Callable<T>> tasks)`: 리스트 형태로 `Callable` 목록을 전달해 가장 먼저 끝나는 `Future`의 결과만을 받을 수 있다.
+
+## CompletableFuture
+- `Future`와 마찬가지로 `get()`을 통해 작업을 수행하고 결과를 반환받아야 한다.
+- `Completable`이 붙는 이유: 외부에서 Complete 시킬 수 있다. Ex) 일정 시간 내에 응답이 안오면 캐시해둔 값으로 대체하는 경우
+  - `complete(T t)`, `CompletableFuture.completedFuture(T t)` 를 통해서 `CompletableFuture<T>`의 기본값(t)을 정의하고 종료시켜줄 수 있다. 
+    - Cf. 이 때에도 값을 받아오기 위해 `get()`은 여전히 필요하다.
+- `Executor`를 만들지 않고, `CompletableFuture`만 가지고 비동기적으로 작업들을 실행할 수 있다.
+  - 🔥 `CompletableFuture`를 사용하면 `Executor`를 생성하지 않고도 멀티스레드로 비동기 작업을 수행할 수 있다. 이는 내부적으로 `Fork/Join framework`의 `CommonPool`을 사용하도록 되어있기 때문이다.
+  - 명시적으로 정의한 스레드 풀을 사용하고 싶을 경우 `runAsync()`, `supplyAsync()`의 두 번째 인자로 `Executor`(스레드풀)을 전달할 수 있다. (콜백 기능을 위한 메서드들 - `thenRunAsync`, `thenAcceptAsync`, `thenApplyAsync` - 도 마찬가지)
+    > Cf. `Fork/Join Pool`: `Executor`의 구현체 Work-Stealing Algorithm을 사용한다. Queue가 아닌 Deque를 사용하여 각 스레드는 수행할 작업이 없는 경우, 스스로 Deque에서 작업을 가져가고, 자신이 파생시킨 세부적인 단위의 Task들을 다른 스레드에게 분산시켰다가 이를 다시 모아서 결과값을 도출하는 기능을 하는 프레임워크이다.
+- new 생성자를 통해 만들 수 있다.
+
+#### 비동기 작업 수행
+- 리턴값이 없는 작업 수행 : `runAsync(Runnable r)`을 통해서 `CompletableFuture<Void>`를 생성할 수 있다.
+- 리턴값이 있는 작업 수행 : `supplyAsync(Supplier<T>)`을 통해서 `CompletableFuture<T>`를 생성할 수 있다.
+
+#### 콜백 수행
+- `thenApply(Function f)`: 결과로 받은 값의 타입을 변경할 수 있다.
+- `thenAccept(Consumer c)`: 파라미터를 가지나 리턴값이 없다.
+- `thenRun(Runnable r)`: 파라미터를 가지지 않고 리턴값이 없다.
+
+
+
