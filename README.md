@@ -371,7 +371,6 @@ public class App {
 - static nullsFirst(), nullsLast()
 - static comparing()
 
---
 
 # 3. Stream API
 
@@ -1107,7 +1106,10 @@ public class App {
 ```
 
 ## Fork/Join Framework
-Multi-Process Programming에 유용한 프레임워크(내용 생략)
+Java 7에 들어온 Multi-Process Programming에 유용한 프레임워크이다.
+> `Executor`의 구현체 Work-Stealing Algorithm을 사용한다. 
+> 이 말인 즉슨, Queue가 아닌 Deque를 사용하여 각 스레드는 수행할 작업이 없는 경우 스스로 Deque에서 작업을 가져가고, 
+> 자신이 파생시킨 세부적인 단위의 Task들을 다른 스레드에게 분산시켰다가 이를 다시 모아서 결과값을 도출하는 기능을 한다.
 
 ## Callable
 스레드에서 작업을 실행하고 결과를 가져오고 싶다면 `void`만 가능한 `Runnable` 대신 `T` 타입을 반환하는 `Callable`을 사용할 수 있다.
@@ -1118,7 +1120,9 @@ Multi-Process Programming에 유용한 프레임워크(내용 생략)
 ## Future
 1. `isDone()`: 작업 상태(가 완료되었는지)를 받을 수 있다
 2. `get()`: 작업을 수행하고 그 결과를 반환한다. 작업이 끝날 때까지 기다렸다가 끝나야 이후 코드가 실행된다. (Blocking Call)
-3. `cancel(Boolean cancel)`: 진행중인 작업을 취소할 사용
+3. `join()`: `get()`과 같이 작업을 수행하고 그 결과를 반환한다. 다만 차이점은, `get()`이 Checked Exception을 반환한다면 `join()`은 Unchecked Exception을 반환한다.
+   - Cf. Checked Exception(`RuntimeException` 상속 X)은 반드시 예외 처리를 해야하고, Unchecked Execption(`RuntimeException` 상속)은 명시적으로 예외 처리를 하지 않아도 된다는 특징이 있다.
+4. `cancel(Boolean cancel)`: 진행중인 작업을 취소할 사용
    - 인터럽트 시킬 것인지 여부(현재 작업이 끝나지 않아도 종료할 것인지 여부)를 인자로 전달한다.
    - Cf. cancel()을 하면 즉시 isDone()은 true가 되고, 실행 중인 작업 중단유무와 상관없이 get()으로 결과를 가져올 수 없다.
 
@@ -1128,14 +1132,20 @@ Cf. `Runnable`이 아닌 `Callable`만이 가능하다.
 - `T invokeAny(Collection<? extends Callable<T>> tasks)`: 리스트 형태로 `Callable` 목록을 전달해 가장 먼저 끝나는 `Future`의 결과만을 받을 수 있다.
 
 ## CompletableFuture
-- `Future`와 마찬가지로 `get()`을 통해 작업을 수행하고 결과를 반환받아야 한다.
+
+- Cf. 기존에 있던 `Future`로는 다음과 같은 것들이 불가능하다.
+  - 작업을 조합할 수가 없다.
+  - 외부에서 종료시킬 수도 없다. 취소하거나 get()에 timeout을 설정할 수는 있다.
+  - 블로킹 코드(`get()`)이 아니고서는 콜백을 실행할 수 없다. (`get()`이 완전히 실행되고서야 하단의 코드가 실행되는 구조)
+  - 예외 처리 API를 제공하지 않는다.
+
+- `Future`와 마찬가지로 `get()`, `join()`을 통해 작업을 수행하고 결과를 반환받아야 한다.
 - `Completable`이 붙는 이유: 외부에서 Complete 시킬 수 있다. Ex) 일정 시간 내에 응답이 안오면 캐시해둔 값으로 대체하는 경우
   - `complete(T t)`, `CompletableFuture.completedFuture(T t)` 를 통해서 `CompletableFuture<T>`의 기본값(t)을 정의하고 종료시켜줄 수 있다. 
     - Cf. 이 때에도 값을 받아오기 위해 `get()`은 여전히 필요하다.
 - `Executor`를 만들지 않고, `CompletableFuture`만 가지고 비동기적으로 작업들을 실행할 수 있다.
-  - 🔥 `CompletableFuture`를 사용하면 `Executor`를 생성하지 않고도 멀티스레드로 비동기 작업을 수행할 수 있다. 이는 내부적으로 `Fork/Join framework`의 `CommonPool`을 사용하도록 되어있기 때문이다.
+  - 🔥 `CompletableFuture`를 사용하면 `Executor`를 생성하지 않고도 멀티스레드로 비동기 작업을 수행할 수 있다. 이는 내부적으로 `Fork/Join framework`의 `CommonPool`을 사용하도록 되어있기 때문이다. - 출력시 `ForkJoinPool`로 출력된다.
   - 명시적으로 정의한 스레드 풀을 사용하고 싶을 경우 `runAsync()`, `supplyAsync()`의 두 번째 인자로 `Executor`(스레드풀)을 전달할 수 있다. (콜백 기능을 위한 메서드들 - `thenRunAsync`, `thenAcceptAsync`, `thenApplyAsync` - 도 마찬가지)
-    > Cf. `Fork/Join Pool`: `Executor`의 구현체 Work-Stealing Algorithm을 사용한다. Queue가 아닌 Deque를 사용하여 각 스레드는 수행할 작업이 없는 경우, 스스로 Deque에서 작업을 가져가고, 자신이 파생시킨 세부적인 단위의 Task들을 다른 스레드에게 분산시켰다가 이를 다시 모아서 결과값을 도출하는 기능을 하는 프레임워크이다.
 - new 생성자를 통해 만들 수 있다.
 
 #### 비동기 작업 수행
@@ -1143,10 +1153,19 @@ Cf. `Runnable`이 아닌 `Callable`만이 가능하다.
 - 리턴값이 있는 작업 수행 : `supplyAsync(Supplier<T>)`을 통해서 `CompletableFuture<T>`를 생성할 수 있다.
 
 #### 콜백 수행
-- `thenApply(Function f)`: 결과로 받은 값의 타입을 변경할 수 있다.
-- `thenAccept(Consumer c)`: 파라미터를 가지나 리턴값이 없다.
-- `thenRun(Runnable r)`: 파라미터를 가지지 않고 리턴값이 없다.
-Cf. `void runAsync(Runnable r)` + `U thenAccept(Function <T, U> f)` -> null 전달
+- `CompletableFuture<U> thenApply(Function<T, U> f)`: 결과로 받은 값의 타입을 변경할 수 있다.
+- `void thenAccept(Consumer<T> c)`: 파라미터를 가지나 리턴값이 없다.
+  - Cf. `void runAsync(Runnable r)` + `U thenAccept(Function <T, U> f)` -> null 전달
+- `void thenRun(Runnable r)`: 파라미터를 가지지 않고 리턴값이 없다.
 
+#### 작업 조합
+- `thenCompose(CompletableFuture<T> c1)`: 두 작업간에 의존성이 있는 경우에 조합하는 경우(`CompletableFuture<U>` 리턴)
+- `thenCombine(CompletableFuture<U> c1, BiFunction<T, U, V> bf)`: 두 작업간에 의존성이 없지만 동시에 비동기적으로 실행하게끔 하는 경우(`CompletableFuture<V>` 리턴)
+- `allOf(CompletableFuture<T> c1, CompletableFuture<U> c2, ...)`: 두개 이상의 작업을 모두 조합하는 경우
+- `anyOf(CompletableFuture<T> c1, CompletableFuture<U> c2, ...)`: 두개 이상의 작업중 가장 먼저 끝난 작업의 결과를 도출하는 경우
 
-
+#### 예외 처리
+- `exceptionally(Function<Throwable>, T> f)`: 작업(들)의 내부에서 Exception이 throw될 경우 실행된다.
+  - Cf. try-catch문의 catch와 유사하다.
+- `handle(BiFunction<T, Throwable, U> bf)`: 정상적으로 종료되었을 때와 에러가 발생했을 때 모두 사용 가능하다.
+  - Cf. 두 개의 파라미터(1.정상적인 경우의 결과, 2.Exception)를 받아서 하나의 결과를 리턴한다. - `BiFuntion`을 인자로 받는다.
