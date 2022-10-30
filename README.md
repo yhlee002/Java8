@@ -76,11 +76,21 @@ clear, fluent, immutable, extensible
 Java Multi-Thread Programming을 지원
 
 ## 주요 클래스
-- Executors(구현체: Executor, ExecutorService, ScheduledExecutorService)
-- Callable
-- Future
-- CompletableFuture
-   - 비동기 작업 수행
-   - 콜백 수행
-   - 작업 조합
-   - 예외 처리
+### Executors
+- 구현체: Executor, ExecutorService, ScheduledExecutorService)
+- `Runnable` 또는 `Callable` 형태의 작업을 인자로 받는다.
+- Cf. 작업을 실행하고 나면 다음 작업이 들어올 때까지 대기하기 때문에 프로세스가 죽지 않는다. 때문에 필요시 명시적으로 종료시켜 주어야 한다.
+
+### Callable
+스레드에서 작업을 실행하고 결과를 가져오고 싶다면 void만 가능한 `Runnable` 대신 사용 가능
+
+### Future
+
+### CompletableFuture
+- 비동기 작업 수행: `runAsync()`, `supplyAsync()`
+- 콜백 수행: `thenApply()`, `thenAccept()`, `thenRun()`, `thenApplyAsync()`, `thenAcceptAsync()`, `thenRunAsync()`
+   - Cf. '-Async'가 붙지 않은 메서드와 붙은 메서드의 차이는 아래와 같다.
+      1. 붙지 않은 메서드: 기본적으로 현재 실행되던 스레드에서 실행된다.
+      2. 붙은 메서드: `ForkJoinPool`에서 실행된다.
+- 작업 조합: `thenCompose()`, `thenCombine()`, `allOf()`, `anyOf()`
+- 예외 처리: `exceptionally()`, `handle()`
