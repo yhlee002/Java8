@@ -31,7 +31,7 @@ public class App {
         names.forEach(System.out::println);
 
         /**
-         * Spliterator : 순환에 사용된다.
+         * Spliterator : collection을 이용해 Spliterator를 생성한다. (순환에 사용된다.)
          * Iterator가 hasNext() 를 통해 반복을 진행하듯이 Spliterator는 tryAdvance() 인자로 반복해서 수행할 로직을 Consumer 형태로 전달해야 한다.
          * Cf. Java Stream의 기반에 사용된다.
          */
@@ -41,7 +41,7 @@ public class App {
         while (spliterator.tryAdvance(System.out::println));
 
         /**
-         * trySplit() : 절반으로 요소들을 나눠준다.
+         * trySplit() : 절반으로 요소들을 나누어준다.
          * Cf. 기존의 Spliterator의 절반의 요소들이 반환된다. 나머지 요소들만이 기존 Spliterator에 남는다.
          */
 

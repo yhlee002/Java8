@@ -297,7 +297,6 @@ public class Test {
 ### Bar
 
 Foo와 같은 반환타입, 같은 매개변수, 같은 이름을 가진 메서드(-> 사실상 같은 메서드)를 가진다. (둘을 같이 구현하는 경우 같은 메서드를 사용하려고 할 경우 직접 구현해야 한다.)
---
 
 ### App
 
@@ -349,18 +348,36 @@ public class App {
         * Iterator가 hasNext() 를 통해 반복을 진행하듯이 Spliterator는 tryAdvance() 인자로 반복해서 수행할 로직을 Consumer 형태로 전달해야 한다.
         * Cf. Java Stream의 기반에 사용된다.
         * trySplit() : 절반으로 요소들을 나눠준다. (기존의 Spliterator의 절반의 요소들이 반환된다. 나머지 요소들만이 기존 Spliterator에 남는다.)
-
+```java
+public class App {
+  public static void main(String[] args) {
+    List<String> names = new ArrayList<>();
+    names.add("yh");
+    names.add("hw");
+    names.add("moongchi");
+    names.add("ladda");
+    names.add("ddui");
+    names.add("lili");
+    names.add("roro");
+  
+    Spliterator<String> spliterator = names.spliterator();
+    while (spliterator.tryAdvance(System.out::println));
+  }
+}
+```
 ### Collection
 
 - stream(), parallelStream()
     - stream() - Collection의 모든 구현체들이 가지는 default method이다. spliterator가 인자로 전달되는 것을 볼 수 있다.
-  ```java
-  // Collection 인터페이스 내부
+```java
+public interface Collection<E> extends Iterable<E> { // Collection 인터페이스 내부
   @Contract(pure = true)
   default Stream<E> stream() {
-      return StreamSupport.stream(spliterator(), parellel);
+    return StreamSupport.stream(spliterator(), parellel);
   }
-    ```
+}
+```
+
 - spliterator()
 
 ### Comparable
@@ -390,14 +407,14 @@ public class App {
 
 ## 특징
 
-- 연속된 데이터를 처리하는 Operator들의 모음. 그 자체로 데이터가 아니다.
-  Cf. Collection이 데이터를 가지고 있다면 이를 소스로 처리하는 역할을 수행
+- 연속된 데이터를 처리하는 'Operator'들의 모음. 그 자체로 데이터가 아니다.
+  Cf.` Collection`이 데이터를 가지고 있다면 이를 소스로 처리하는 역할을 수행
 - 처리하는 데이터 소스를 변경하지 않는다.
-- Stream으로 처리하는 데이터는 오직 한번만 처리한다.
+- `Stream`으로 처리하는 데이터는 오직 한번만 처리한다.
 - 무제한일 수 있다. (Short Circuit 메서드 - 제한을 걸 수 있다. - 를 이용해 제한할 수 있다.)
 - 중개 오퍼레이션들은 기본적으로 'lazy'하다.
 - 병렬적으로 데이터를 처리할 수 있다. - `parellelStream()`
-    - 내부에서 Spliterator를 사용해 Collection 데이터를 반으로 나누고, 각각을 병행적으로 처리해 마지막에 데이터를 합산하는 작업을 한다.
+    - 내부에서 `Spliterator`를 사용해 `Collection` 데이터를 반으로 나누고, 각각을 병행적으로 처리해 마지막에 데이터를 합산하는 작업을 한다.
     - 병렬 처리가 무조건 더 빨라 좋기만 한 것은 아니다. - 스레드 생성, 데이터 수집, 스레드 간의 컨텍스트 스위칭 비용 등 비용이 더 들 수도 있다.
     - Cf. 데이터가 너무 방대하게 큰 경우에는 이 방법이 더 유용하다.
 
@@ -417,11 +434,11 @@ public class Test {
 
 #### Intermediate operation(중개 오퍼레이터)
 
-계속 이어진다. 즉, Stream 타입을 반환한다. Ex. `map()`, `limit()`, `sorted` 등
+계속 이어진다. 즉, `Stream` 타입을 반환한다. Ex. `map()`, `limit()`, `sorted` 등
 
 #### Terminal Operation(종료 오퍼레이터)
 
-Stream 타입이 아닌 타입을 반환한다. Ex. `forEach()`, `allMatch()`, `collect()` 등
+`Stream` 타입이 아닌 타입을 반환한다. Ex. `forEach()`, `allMatch()`, `collect()` 등
 
 #### 예 - map(), limit(), collect(), ...
 
@@ -457,41 +474,41 @@ public class Test {
 
 #### map
 
-Stream 클래스에서 제공하는 메서드
-Stream의 각 요소들을 반복해서 처리
+`Stream` 클래스에서 제공하는 메서드
+`Stream`의 각 요소들을 반복해서 처리
 
 #### forEach
 
-Stream 혹은 Iterable 클래스에서 제공하는 메서드
-Stream 혹은 List의 각 요소들을 반복
+`Stream` 혹은 `Iterable` 클래스에서 제공하는 메서드
+`Stream` 혹은 `List`의 각 요소들을 반복
 
 #### collect
 
-Stream 클래스에서 제공하는 메서드
+`Stream` 클래스에서 제공하는 메서드
 특정 타입으로 데이터를 모을 때 사용(종료 오퍼레이터에 해당)
-Cf. List<String> 타입으로 모으고자 할 때는 `collect(Collectors.toList())` 과 같이 작성할 수 있다.
+Cf. `List<String>` 타입으로 모으고자 할 때는 `collect(Collectors.toList())` 과 같이 작성할 수 있다.
 
 #### limit
 
-Stream 클래스에서 제공하는 메서드
+`Stream` 클래스에서 제공하는 메서드
 몇 개의 데이터만 처리할 것인지 제한을 둘 때 사용
 
 #### skip
 
-Stream 클래스에서 제공하는 메서드
+`Stream` 클래스에서 제공하는 메서드
 몇 개의 데이터를 스킵할 것인지 제한을 둘 때 사용
 
 #### anyMatch
 
-Stream 클래스에서 제공하는 메서드
+`Stream` 클래스에서 제공하는 메서드
 조건에 매칭되는 결과가 하나라도 있는지 확인할 때 사용
-boolean 타입을 반환한다. (종료 오퍼레이터에 해당)
+`boolean` 타입을 반환한다. (종료 오퍼레이터에 해당)
 예를 들어 Java 강의 중 강의명에 'Test'가 들어가는 강의가 있는지 확인하고자 할 때는 `javaClasses.stream().anyMatch(oc -> oc.contains("Test"));`과 같이 작성할
 수 있다.
 
 #### Stream.iterate
 
-Stream 클래스에서 제공하는 `static` 메서드
+`Stream` 클래스에서 제공하는 `static` 메서드
 데이터로부터 스트림을 만드는 것이 아닌 직접 스트림을 만든다. 때문에 초깃값(seed)가 필요하다.
 예를 들어 10부터 1씩 증가하는 스트림을 생성하고자 한다면 `Stream.iterate(10, i -> i + 1)`와 같이 작성할 수 있다.
 
@@ -1035,10 +1052,6 @@ public class App {
 ### join
 
 스레드가 다른 스레드의 작업이 끝나기를 기다리게 할 때에는 `join()`을 사용할 수 있다.
-
-```java
-
-```
 
 ## Executors
 
