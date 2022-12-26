@@ -94,3 +94,58 @@ Java Multi-Thread Programming을 지원
       2. 붙은 메서드: `ForkJoinPool`에서 실행된다.
 - 작업 조합: `thenCompose()`, `thenCombine()`, `allOf()`, `anyOf()`
 - 예외 처리: `exceptionally()`, `handle()`
+
+# 7. Annotation 변화
+Java 8 부터 어노테이션을 1)타입 선언부에도 사용 가능하게, 2)중복해서 사용할 수 있게 바뀌었다.
+
+## 타입 선언부
+- 제네릭 타입
+- 변수 타입
+- 매개변수 타입
+- 예외 타입
+
+## 타입에 사용하기 위한 준비 사항
+`@Target` 을 통해 해당 클래스가 어노테이션으로써 사용될 수 있는 곳을 정의할 수 있다.
+
+Java 8에 TYPE_PARAMETER와 TYPE_USE 두 가지 타입이 추가되었다.
+
+### 1) ElementType.TYPE_PARAMETER 
+해당 클래스를Type Parameter에만 사용 가능해진다.
+
+### 2) ElementType.TYPE_USE
+해당 클래스를Type에 모두 사용 가능해진다.
+
+## 중복 사용 가능한 어노테이션 생성
+1. `@Repetable`어노테이션을 통해 컨테이너로 사용될 클래스 지정
+
+    Cf. 컨테이너가 되는 클래스는 Retention 전략 범위와 Target 범위가 요소 어노테이션 클래스보다 넓어야 한다. (어노테이션 생성 시 `@Retention`, `@Target` 필요)
+
+2. 컨테이너 클래스는 기본적으로 반드시 어노테이션 목록을 가져야 한다. 이를 value라는 이름으로 정의해야한다. (`@Repeatable` 어노테이션 내부에 value라는 이름의 멤버 변수가 존재함을 참고)
+
+## 어노테이션 정보 조회
+
+### 특정 클래스에 등록된 어노테이션 목록 조회
+`<A extends Annotation>A[] getAnnotationsByType(Class<A>annotationClass)`
+
+### 특정 타입의 클래스의 어노테이션 조회
+`<A extends Annotation>A getAnnotation(Class<A>annotationClass)`
+
+Cf. Repeatable한 어노테이션을 컨테이너로 감싸서 가져오기 위해서는 해당 메서드를 사용하되 인자로 컨테이너 클래스를 전달할 수 있다.
+
+```java
+@Item("가위")
+@Item("색종이")
+public class App {
+    public void main(String[] args) {
+        Item[] items = App_AnnotationDuplicateUse.class.getAnnotationsByType(Item.class);
+        Arrays.stream(items).forEach(c -> {
+            System.out.println(c.value());
+        });
+
+        ItemContainer container = App_AnnotationDuplicateUse.class.getAnnotation(ItemContainer.class);
+        Arrays.stream(container.value()).forEach(c -> {
+            System.out.println(c.value());
+        });
+    }
+}
+```
