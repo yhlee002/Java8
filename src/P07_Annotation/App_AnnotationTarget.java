@@ -2,7 +2,7 @@ package P07_Annotation;
 
 import java.util.Arrays;
 import java.util.List;
-@Chicken2("마늘")
+@Chicken
 public class App_AnnotationTarget {
     public static void main(@Chicken String[] args) throws @Chicken RuntimeException {
         List<@Chicken String> names = Arrays.asList("yhlee");
